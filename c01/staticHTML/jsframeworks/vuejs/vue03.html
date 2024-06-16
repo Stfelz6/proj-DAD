@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta>
+    <meta charset="UTF-8">
+    <title>Reverse in Vue.js</title>
+  </meta>
+
+  <body>
+	
+    <div id="app">
+  		<p>{{ message }}</p>
+  		<button v-on:click="reverseMessage">Reverse Message</button>
+  		<br/><br/>
+  		<div v-if="responseAvailable == true">
+	        <hr>
+	        <p>
+	            <i>{{ result }}</i>
+	        </p>
+	        
+	        <hr>
+		</div>
+		<button v-on:click="fetchAPIData">Call REST API!</button>
+	</div>
+
+    <script
+      src="//cdnjs.cloudflare.com/ajax/libs/vue/2.1.6/vue.min.js">
+    </script>
+
+    <script>
+    new Vue({
+  		el: '#app',
+  		data: {
+    		message: 'Hello Vue.js!',
+    		result: " ",
+            responseAvailable: false,
+            apiKey: '<YOUR_RAPIDAPI_KEY>'
+  		},
+  		methods: {
+    		reverseMessage: function () {
+      			this.message = this.message.split('').reverse().join('')
+    		},
+  			fetchAPIData: function () { 
+        		this.responseAvailable = false;
+            	fetch("http://127.0.0.1:7000/listUsersNames", {
+                	"method": "GET",
+                	"headers": {
+                    	"x-rapidapi-host": "jokes-database.p.rapidapi.com",
+                    	"x-rapidapi-key": this.apiKey
+                	}
+            	})
+            	.then(response => { 
+	                if(response.ok){
+	                	console.log(response)
+	                	return response.json()  
+	                    
+	                } else{
+	                    alert("Server returned " + response.status + " : " + response.statusText);
+	                }                
+            	})
+            	.then((users) => {
+            		this.result = users;
+                	this.responseAvailable = true;
+                	console.log(users)
+				})
+	            .catch(err => {
+	                console.log(err);
+	            });
+            	
+        	}
+  		}
+	})
+    </script>
+
+  </body>
+</html>
+

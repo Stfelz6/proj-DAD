@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File Upload and Encryption/Decryption</title>
+</head>
+<body>
+    <h2>Upload a BMP Image and Perform AES Encryption/Decryption</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="fileInput">Please select a BMP Image:</label>
+        <input type="file" id="fileInput" name="files" accept=".bmp" required><br><br>
+
+        <label for="keyInput">AES Key for the encryption (Base64 encoded):</label>
+        <input type="text" id="keyInput" name="key" required><br><br>
+
+        <label for="operationSelect">Select Operation:</label>
+        <select id="operationSelect" name="operation" required>
+            <option value="encryption">encryption</option>
+            <option value="decryption">decryption</option>
+        </select><br><br>
+
+        <label for="modeSelect">Select AES Mode:</label>
+        <select id="modeSelect" name="mode" required>
+            <option value="ECB">ECB</option>
+            <option value="CBC">CBC</option>
+        </select><br><br>
+
+        <button type="submit">Upload & Process</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            let formData = new FormData();
+            formData.append('files', document.getElementById('fileInput').files[0]);
+            formData.append('key', document.getElementById('keyInput').value);
+            formData.append('operation', document.getElementById('operationSelect').value);
+            formData.append('mode', document.getElementById('modeSelect').value);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('response').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('response').innerHTML = 'An error occurred while processing the request.';
+            });
+        });
+    </script>
+</body>
+</html>
